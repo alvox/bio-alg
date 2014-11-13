@@ -53,3 +53,18 @@
           :let [s (subs text i (+ i k))]
           :when (= s pattern)]
       i)))
+
+(defn gc-content [^String text]
+  (let [text-length (.length text)
+        occurencies (reduce #(if (or (= \G %2) (=\C %2)) (inc %1) %1) 0 text)]
+    (-> occurencies (* 100) (/ text-length) double)))
+
+(defn hamming-distance [^String string-1 ^String string-2]
+  (loop [pointer 0 counter 0]
+    (cond
+      (= pointer (.length string-1))
+        counter
+      (= (.charAt string-1 pointer) (.charAt string-2 pointer))
+        (recur (inc pointer) counter)
+      :else
+        (recur (inc pointer) (inc counter)))))
