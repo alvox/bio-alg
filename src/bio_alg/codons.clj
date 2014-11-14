@@ -1,4 +1,5 @@
-(ns bio-alg.codons)
+(ns bio-alg.codons
+  (:require [clojure.string :as str]))
 
 (def codons {"UUU" "F" "UUC" "F" "UUA" "L" "UUG" "L" "UCU" "S" "UCC" "S" "UCA" "S" "UCG" "S"
              "UAU" "Y" "UAC" "Y" "UGU" "C" "UGC" "C" "UGG" "W"
@@ -17,3 +18,15 @@
          (map #(get codons %))
          (drop-last)
          (apply str)))
+
+(defn remove-introns [introns dna-string]
+  (reduce #(str/replace %1 %2 "") dna-string introns))
+
+(defn thymine-to-uracil [dna-string]
+  (str/replace dna-string "T" "U"))
+
+(defn splice-rna [dna-string introns]
+  (->> dna-string
+       (remove-introns introns)
+       (thymine-to-uracil)
+       (decode-protein)))
