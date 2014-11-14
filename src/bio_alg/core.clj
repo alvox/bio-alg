@@ -5,8 +5,8 @@
 
 (defn all-k-mers
   "Generate all k-mers in given text"
-  [text k]
-  (let [l (-> text count (- k) (+ 1))]
+  [^String text k]
+  (let [l (-> text .length (- k) (+ 1))]
       (for [i (range 0 l)]
         (subs text i (+ i k)))))
 
@@ -46,13 +46,13 @@
 
 (defn find-indexes
   "Find starting indexes of pattern in string"
-  [pattern text]
-  (let [k (count pattern)
-        l (-> text count (- k) (+ 1))]
+  [^String pattern ^String text]
+  (let [k (.length pattern)
+        l (-> text .length (- k) (+ 1))]
     (for [i (range 0 l)
           :let [s (subs text i (+ i k))]
           :when (= s pattern)]
-      i)))
+      (inc i))))
 
 (defn gc-content [^String text]
   (let [text-length (.length text)
@@ -68,3 +68,29 @@
         (recur (inc pointer) counter)
       :else
         (recur (inc pointer) (inc counter)))))
+
+(defn substring? [strings motif]
+  (reduce (fn [acc ^String elem]
+            (and (.contains elem motif) acc))
+          true
+          strings))
+
+(defn shared-kmers [strings shortest k]
+  (for [k-mer (all-k-mers shortest k)
+        :when (substring? strings k-mer)]
+    k-mer))
+
+(defn shared-motif [strings]
+  (let [shortest (reduce #(if (< (count %1) (count %2)) %1 %2) strings)
+        shortest-len (count shortest)]
+    (loop [k (inc shortest-len)
+           result '()]
+      (if (not-empty result)
+        result
+        (recur (dec k) (shared-kmers (remove #(= %1 shortest) strings) shortest k))))))
+
+(defn run []
+  (let [content (slurp "/Users/alvox/Downloads/rosalind_lcsm-2.txt")
+        lines (drop 1 (str/split content #">Rosalind_\d+"))
+        cleared-lines (map #(str/replace % "\n" "") lines)]
+    (shared-motif cleared-lines)))
