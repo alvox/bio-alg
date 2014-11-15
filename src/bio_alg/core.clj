@@ -1,5 +1,6 @@
 (ns bio-alg.core
-  (:require [clojure.string :as str])
+  (:require [clojure.string :as str]
+            [bio-alg.fasta :refer [load-from-disk]])
   (:gen-class)
   (:import (java.util Arrays)))
 
@@ -89,12 +90,11 @@
         result
         (recur (dec k) (shared-kmers (remove #(= %1 shortest) strings) shortest k))))))
 
-(defn first-spliced-motif [^String dna-string ^String motif]
-  (loop [dna-index 0 motif-index 0 res []]
-    (if (> motif-index (dec (count motif)))
-      res
-      (let [dna-char   (.charAt dna-string dna-index)
-            motif-char (.charAt motif motif-index)]
-        (if (= dna-char motif-char)
-          (recur (inc dna-index) (inc motif-index) (conj res (inc dna-index)))
-          (recur (inc dna-index) motif-index res))))))
+(defn first-spliced-motif [dna-string motif-string]
+  (second (reduce
+    (fn [[motif result] [idx dna-char]]
+      (if (= (first motif) dna-char)
+        [(rest motif) (conj result (inc idx))]
+        [motif result]))
+    [motif-string []]
+    (map-indexed vector dna-string))))

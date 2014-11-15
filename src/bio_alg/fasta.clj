@@ -6,3 +6,4 @@
        (drop 1)
        (map str/split-lines)
        (reduce #(assoc %1 (first %2) (apply str (rest %2))) {})))
+
