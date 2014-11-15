@@ -88,9 +88,3 @@
       (if (not-empty result)
         result
         (recur (dec k) (shared-kmers (remove #(= %1 shortest) strings) shortest k))))))
-
-(defn run []
-  (let [content (slurp "/Users/alvox/Downloads/rosalind_lcsm-2.txt")
-        lines (drop 1 (str/split content #">Rosalind_\d+"))
-        cleared-lines (map #(str/replace % "\n" "") lines)]
-    (shared-motif cleared-lines)))
