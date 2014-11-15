@@ -2,17 +2,11 @@
   (:require [clojure.math.combinatorics :refer [permutations selections]]
             [clojure.string :as str]))
 
-(defn to-str [coll]
-  (-> coll
-       (.toString)
-       (str/replace "[" "")
-       (str/replace "]" "")))
-
 (defn permutation [n]
   (let [p (permutations (range 1 (inc n)))]
     (println (count p))
     (doseq [x p]
-      (println (to-str x)))))
+      (println x))))
 
 (defn kfn [alphabet]
   (fn [str-1 str-2]
@@ -33,9 +27,4 @@
   (let [alphabet (vec alpha-string)]
     (->> (selections alphabet n)
          (map #(apply str %))
-         (sort (kfn alphabet))
-         )))
-
-(defn run [str n]
-  (doseq [x (combination str n)]
-    (println x)))
+         (sort (kfn alphabet)))))

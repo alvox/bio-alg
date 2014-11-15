@@ -88,3 +88,13 @@
       (if (not-empty result)
         result
         (recur (dec k) (shared-kmers (remove #(= %1 shortest) strings) shortest k))))))
+
+(defn first-spliced-motif [^String dna-string ^String motif]
+  (loop [dna-index 0 motif-index 0 res []]
+    (if (> motif-index (dec (count motif)))
+      res
+      (let [dna-char   (.charAt dna-string dna-index)
+            motif-char (.charAt motif motif-index)]
+        (if (= dna-char motif-char)
+          (recur (inc dna-index) (inc motif-index) (conj res (inc dna-index)))
+          (recur (inc dna-index) motif-index res))))))
